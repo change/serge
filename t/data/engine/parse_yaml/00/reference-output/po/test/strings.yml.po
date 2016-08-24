@@ -11,11 +11,11 @@ msgstr ""
 msgid "bar1"
 msgstr "ḃáŕ1"
 
-#. /subsection1/baz
+#. /baz__PRESERVE_ANCHOR__baz_anchor
 #: File: strings.yml
-#: ID: d153669b002fd5ab4e43d885eb02f39c
-msgid "etc2"
-msgstr "ēţç2"
+#: ID: 641460c2a4284dfe0a6e9b1368f89fd5
+msgid "etc1"
+msgstr "ēţç1"
 
 #. /subsection1/foo
 #: File: strings.yml
@@ -23,8 +23,8 @@ msgstr "ēţç2"
 msgid "bar2"
 msgstr "ḃáŕ2"
 
-#. /baz__PRESERVE_ANCHOR__baz_anchor
+#. /subsection1/baz
 #: File: strings.yml
-#: ID: 641460c2a4284dfe0a6e9b1368f89fd5
-msgid "etc1"
-msgstr "ēţç1"
+#: ID: d153669b002fd5ab4e43d885eb02f39c
+msgid "etc2"
+msgstr "ēţç2"

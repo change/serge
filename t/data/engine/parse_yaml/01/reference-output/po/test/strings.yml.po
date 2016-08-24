@@ -5,36 +5,17 @@ msgstr ""
 "Language: test\n"
 "Generated-By: Serge 1.1\n"
 
-#. /subsection1/baz
-#: File: strings.yml
-#: ID: d153669b002fd5ab4e43d885eb02f39c
-msgid "etc2"
-msgstr "ēţç2"
-
-#. /subsection1/foo
-#: File: strings.yml
-#: ID: e5f2adbdbe00c558062db891f2072489
-msgid "bar2"
-msgstr "ḃáŕ2"
-
-#. /baz
-#: File: strings.yml
-#: ID: 641460c2a4284dfe0a6e9b1368f89fd5
-msgid "etc1"
-msgstr "ēţç1"
-
-#. /subsection2/baz
-#: File: strings.yml
-#: ID: e3a130f8737c5bdb7197ca83dd2d04ae
-msgctxt "/subsection2/baz"
-msgid "etc1"
-msgstr "ēţç1"
-
 #. /subsection2/foo
 #: File: strings.yml
 #: ID: 2b2b5146df00a72b24a62de7f60c818b
 msgid "bar1"
 msgstr "ḃáŕ1"
+
+#. /subsection2/baz
+#: File: strings.yml
+#: ID: 641460c2a4284dfe0a6e9b1368f89fd5
+msgid "etc1"
+msgstr "ēţç1"
 
 #. /foo
 #: File: strings.yml
@@ -42,3 +23,22 @@ msgstr "ḃáŕ1"
 msgctxt "/foo"
 msgid "bar1"
 msgstr "ḃáŕ1"
+
+#. /subsection1/foo
+#: File: strings.yml
+#: ID: e5f2adbdbe00c558062db891f2072489
+msgid "bar2"
+msgstr "ḃáŕ2"
+
+#. /subsection1/baz
+#: File: strings.yml
+#: ID: d153669b002fd5ab4e43d885eb02f39c
+msgid "etc2"
+msgstr "ēţç2"
+
+#. /baz
+#: File: strings.yml
+#: ID: af7d23ba4e07c25a8353faf84f0cb47e
+msgctxt "/baz"
+msgid "etc1"
+msgstr "ēţç1"
