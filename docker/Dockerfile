@@ -1,27 +1,28 @@
-ARG BASE_IMAGE=alpine:3.7
+ARG BASE_IMAGE=debian:stretch
 
 FROM ${BASE_IMAGE}
 
-ARG UPDATE_REPOS
-ENV UPDATE_REPOS ${UPDATE_REPOS:-apk update}
-
 ARG INSTALL_PREREQUISITES
-ENV INSTALL_PREREQUISITES ${INSTALL_PREREQUISITES:-apk add --no-cache perl perl-utils perl-dev make build-base openssl}
+ENV INSTALL_PREREQUISITES ${INSTALL_PREREQUISITES:-apt-get -qq -y update && apt-get -qq -y install make libxml-parser-perl libtext-diff-perl libyaml-perl libmime-lite-perl libfile-copy-recursive-perl libauthen-sasl-perl libxml-twig-perl libtext-csv-xs-perl libjson-perl libjson-xs-perl libnet-smtp-ssl-perl libcpan-sqlite-perl libio-string-perl}
 
 ARG CLEAN_PREREQUISITES
-ENV CLEAN_PREREQUISITES ${CLEAN_PREREQUISITES:-apk del -f --purge make build-base openssl-dev expat-dev}
+ENV CLEAN_PREREQUISITES ${CLEAN_PREREQUISITES:-apt-get -qq -y purge make}
 
 COPY . /serge
 
+# The simplest way to handle the escaping contortions is to cat everything into a file and source it.
 RUN set -ex \
-    && ${UPDATE_REPOS} \
-    && ${INSTALL_PREREQUISITES} \
+    && echo ${INSTALL_PREREQUISITES} > /tmp/prereq \
+    && source /tmp/prereq \
+    && rm /tmp/prereq \
     && yes | cpan App::cpanminus \
     && cpanm --no-wget --installdeps /serge \
     && rm -rf /root/.cpan* /usr/local/share/man \
     && mkdir -p /data \
     && cp /serge/doc/sample.serge /data \
-    && ${CLEAN_PREREQUISITES}
+    && echo ${CLEAN_PREREQUISITES} > /tmp/prereq \
+    && source /tmp/prereq \
+    && rm /tmp/prereq
 
 ENV PATH="/serge/bin:${PATH}"
 VOLUME /data
