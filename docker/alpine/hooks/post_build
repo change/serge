@@ -1,4 +1,0 @@
-#!/bin/sh
-echo '[***] Running hooks/post_build'
-export | sort
-echo '[***] end hooks/post_build'

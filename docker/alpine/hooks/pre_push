@@ -1,4 +1,0 @@
-#!/bin/sh
-echo '[***] Running hooks/pre_push'
-export | sort
-echo '[***] end hooks/pre_push'

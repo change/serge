@@ -1,4 +1,0 @@
-#!/bin/sh
-echo '[***] Running hooks/post_checkout'
-export | sort
-echo '[***] end hooks/post_checkout'

@@ -1,0 +1,25 @@
+#!/bin/bash
+
+set -ex
+
+if echo $DOCKER_TAG | grep -q alpine ; then
+  echo '[****] Building alpine image'
+  # Use the values in the Docker file, so that we do not have them in two places, allowing divergence
+  # BASE_IMAGE=alpine:3.7
+  # UPDATE_REPOS='apk update'
+  # INSTALL_PREREQUISITES='apk add --no-cache perl perl-utils perl-dev make build-base openssl'
+  # CLEAN_PREREQUISITES='apk del -f --purge make build-base openssl-dev expat-dev'
+else
+  echo '[****] Building debian image (ignore the ENV defaults in the output below, they will be overriden)'
+  BASE_IMAGE=debian:stretch
+  UPDATE_REPOS='apt-get -qq -y update'
+  INSTALL_PREREQUISITES='apt-get -qq -y install build-essential libssl-dev libexpat-dev'
+  CLEAN_PREREQUISITES='apt-get -qq -y purge build-essential libssl-dev libexpat-dev'
+fi
+
+docker build \
+  --build-arg BASE_IMAGE="$BASE_IMAGE" \
+  --build-arg UPDATE_REPOS="$UPDATE_REPOS" \
+  --build-arg INSTALL_PREREQUISITES="$INSTALL_PREREQUISITES" \
+  --build-arg CLEAN_PREREQUISITES="$CLEAN_PREREQUISITES" \
+  -t ${IMAGE_NAME} -f ./Dockerfile ..
