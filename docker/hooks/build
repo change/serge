@@ -3,23 +3,21 @@
 set -ex
 
 if echo $DOCKER_TAG | grep -q alpine ; then
-  echo '[****] Building alpine image'
-  # Use the values in the Docker file, so that we do not have them in two places, allowing divergence
-  # BASE_IMAGE=alpine:3.7
-  # UPDATE_REPOS='apk update'
-  # INSTALL_PREREQUISITES='apk add --no-cache perl perl-utils perl-dev make build-base openssl'
-  # CLEAN_PREREQUISITES='apk del -f --purge make build-base openssl-dev expat-dev'
+  echo '[****] Building alpine image (ignore the ENV defaults in the output below, they will be overriden)'
+  BASE_IMAGE=alpine:3.8
+  # TODO: Eventually perl-json-xs will move to the edge repo, and then 3.9?
+  INSTALL_PREREQUISITES='echo -e @edge http://dl-cdn.alpinelinux.org/alpine/edge/main\\n@testing http://nl.alpinelinux.org/alpine/edge/testing >> /etc/apk/repositories && apk update && apk add --no-cache perl perl-utils perl-dev make perl-xml-parser perl-text-diff perl-yaml-libyaml perl-mime-lite perl-file-copy-recursive perl-authen-sasl perl-xml-twig perl-text-csv_xs perl-json perl-json-xs@testing perl-net-smtp-ssl perl-dbd-sqlite'
+  CLEAN_PREREQUISITES='apk del -f --purge make'
 else
-  echo '[****] Building debian image (ignore the ENV defaults in the output below, they will be overriden)'
-  BASE_IMAGE=debian:stretch
-  UPDATE_REPOS='apt-get -qq -y update'
-  INSTALL_PREREQUISITES='apt-get -qq -y install build-essential libssl-dev libexpat-dev'
-  CLEAN_PREREQUISITES='apt-get -qq -y purge build-essential libssl-dev libexpat-dev'
+  echo '[****] Building debian image'
+  # Use the values in the Docker file, so that we do not have them in two places, allowing divergence
+  BASE_IMAGE=`grep BASE_IMAGE= Dockerfile | sed -e 's/.*=//'`
+  INSTALL_PREREQUISITES=`grep 'INSTALL_PREREQUISITES:-' Dockerfile | sed 's/.*:-//;s/\}//'`
+  CLEAN_PREREQUISITES=`grep 'CLEAN_PREREQUISITES:-' Dockerfile | sed 's/.*:-//;s/\}//'`
 fi
 
 docker build \
   --build-arg BASE_IMAGE="$BASE_IMAGE" \
-  --build-arg UPDATE_REPOS="$UPDATE_REPOS" \
   --build-arg INSTALL_PREREQUISITES="$INSTALL_PREREQUISITES" \
   --build-arg CLEAN_PREREQUISITES="$CLEAN_PREREQUISITES" \
   -t ${IMAGE_NAME} -f ./Dockerfile ..
