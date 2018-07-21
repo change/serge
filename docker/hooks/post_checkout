@@ -1,0 +1,10 @@
+#!/bin/sh
+
+echo '[****] Running post_checkout'
+
+set -ex
+
+cat << EOF > ../.dockerignore
+.git
+docker
+EOF
