@@ -46,3 +46,5 @@ docker build \
   --build-arg INSTALL_PREREQUISITES="$INSTALL_PREREQUISITES" \
   --build-arg CLEAN_PREREQUISITES="$CLEAN_PREREQUISITES" \
   -t ${IMAGE_NAME} -f ./Dockerfile ..
+
+  echo "# README updated after build!" >> README.md
