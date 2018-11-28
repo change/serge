@@ -6,8 +6,9 @@ use strict;
 use File::Path;
 use Encode qw(decode_utf8 encode_utf8);
 use Serge::Mail;
-use Serge::Util qw(xml_escape_strref);
-use YAML::XS;
+use Serge::Util qw(xml_escape_strref glue_plural_string split_plural_string);
+use Serge::RailsPluralSupport;
+use YAML::XS qw(Load Dump LoadFile);
 
 sub name {
     return 'Generic YAML tree parser plugin';
@@ -21,13 +22,16 @@ sub init {
     $self->{errors} = {};
 
     $self->merge_schema({
-        expand_aliases => 'BOOLEAN',
+        expand_aliases        => 'BOOLEAN',
 
-        email_from     => 'STRING',
-        email_to       => 'ARRAY',
-        email_subject  => 'STRING',
+        email_from            => 'STRING',
+        email_to              => 'ARRAY',
+        email_subject         => 'STRING',
 
-        yaml_kind      => 'STRING',
+        yaml_kind             => 'STRING',
+
+        expand_plurals        => 'BOOLEAN',
+        language_plurals_file => 'STRING',
     });
 
     $self->add('after_job', \&report_errors);
@@ -49,6 +53,17 @@ sub validate_data {
     my $yaml_kind = $self->{data}->{yaml_kind};
     if (defined($yaml_kind) && $yaml_kind !~ /^(rails|generic)$/) {
         print "WARNING: 'yaml_kind' is '$yaml_kind'. Supported values: rails, generic.\n";
+    }
+
+    if ($yaml_kind eq 'rails' && !exists($self->{data}->{expand_plurals})) {
+      # Rails should default to expanding plurals
+      $self->{data}->{expand_plurals} = 1;
+    }
+
+    if ($self->{data}->{expand_plurals}) {
+        mapping_configuration_file($self->{data}->{language_plurals_file}) if (exists($self->{data}->{language_plurals_file}));
+    } elsif (defined($self->{data}->{language_plurals_file})) {
+        print "WARNING: 'language_plurals_file' is defined, but 'expand_plurals' is not true.\n";
     }
 }
 
@@ -187,6 +202,8 @@ sub process_node {
 
     if (ref($subtree) eq 'HASH') {
         # hash
+        return $self->process_plural($path, $subtree, $callbackref, $lang, $parent, $key)
+            if ($self->{data}{expand_plurals} && tree_is_plural($subtree));
 
         foreach my $key (sort keys %$subtree) {
             $self->process_node($path.'/'.$key, $subtree->{$key}, $callbackref, $lang, $subtree, $key);
@@ -210,6 +227,23 @@ sub process_node {
                 &$callbackref($string, undef, $path, undef, undef, $path);
             }
         }
+    }
+}
+
+sub process_plural {
+    my ($self, $path, $subtree, $callbackref, $lang, $parent, $key) = @_;
+
+    my $glued = rails_tree_to_value($subtree);
+
+    # If any plural values are set for preservation only, skip the whole tree
+    return if($glued =~ /^__PRESERVE_(ANCHOR|REFERENCE)__/);
+
+    if($lang) {
+        my $translated_string = &$callbackref($glued, undef, $path, undef, $lang, $path);
+
+        $parent->{$key} = value_to_rails_tree($translated_string, $lang, $path);
+    } else {
+        &$callbackref($glued, undef, $path, undef, undef, $path);
     }
 }
 
