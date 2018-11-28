@@ -24,11 +24,14 @@ if echo $DOCKER_TAG | grep -q alpine ; then
   ADD_REPOS='echo -e @edge http://dl-cdn.alpinelinux.org/alpine/edge/main\\n@testing http://nl.alpinelinux.org/alpine/edge/testing >> /etc/apk/repositories'
   UPDATE_REPOS='apk update'
   # TODO: Eventually perl-json-xs will move to the edge repo, and then 3.9?
+
+
   PACKAGES=( \
     perl perl-app-cpanminus make perl-xml-parser perl-text-diff \
     perl-yaml-libyaml perl-mime-lite perl-file-copy-recursive \
     perl-authen-sasl perl-xml-twig perl-text-csv_xs perl-json \
     perl-json-xs@testing perl-net-smtp-ssl perl-dbd-sqlite \
+    perl-lwp-protocol-https git mercurial subversion openssh-client \
   )
   INSTALL_PREREQUISITES="$ADD_REPOS && $UPDATE_REPOS && apk add --no-cache ${PACKAGES[*]}"
   CLEAN_PREREQUISITES='apk del -f --purge make perl-app-cpanminus'
